@@ -22,7 +22,7 @@ int read_line(int sock, char buffer[]){
         buffer[length] = data;
         length++;
         if (length >= 2 && buffer[length-2] == '\r' && buffer[length-1] == '\n'){
-            buffer[length-1] = '\0';
+            buffer[length-2] = '\0';
             return length;
         }
     }
@@ -204,6 +204,12 @@ int main() {
             if (strstr(argument, "SirLogsalot") != NULL){
                 send_message(socket_desc, "#WatchPeopleCode", "Yes my lord!");
             }
+        }else if (strcmp(command, "JOIN") == 0){
+            char logline[512];
+            char *channel = get_argument(line, 1);
+            sprintf(logline, "%s joined %s.", username, channel);
+            free(channel);
+            log_with_date(logline);
         }
 
         free(prefix);
