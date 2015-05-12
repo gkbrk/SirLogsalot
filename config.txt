@@ -1,0 +1,4 @@
+server = 195.154.200.232
+port = 6667
+nick = SirLogsalot
+channels = #WatchPeopleCode,#WatchCodeTest
