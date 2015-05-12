@@ -228,12 +228,13 @@ int main() {
             char *channel = get_argument(line, 1);
 
             sprintf(logline, "%s/%s: %s", channel, username, argument);
-            free(channel);
             log_with_date(logline);
             
             if (strstr(argument, "SirLogsalot") != NULL){
-                send_message(socket_desc, "#WatchPeopleCode", "Yes my lord!");
+                send_message(socket_desc, channel, "Yes my lord!");
             }
+
+            free(channel);
         }else if (strcmp(command, "JOIN") == 0){
             char logline[512];
             char *channel = get_argument(line, 1);
