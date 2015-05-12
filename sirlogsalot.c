@@ -6,10 +6,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define IRC_SERVER "195.154.200.232"
-#define IRC_PORT 6667
-#define NICK "SirLogsalot"
-
 int read_line(int sock, char buffer[]){
     int length = 0;
     while (1){
@@ -189,19 +185,31 @@ int main() {
        exit(1);
     }
     
+    char *ip = get_config("server");
+    char *port = get_config("port");
+
     struct sockaddr_in server;
-    server.sin_addr.s_addr = inet_addr(IRC_SERVER);
+    server.sin_addr.s_addr = inet_addr(ip);
     server.sin_family = AF_INET;
-    server.sin_port = htons(IRC_PORT);
+    server.sin_port = htons(atoi(port));
+
+    free(ip);
+    free(port);
 
     if (connect(socket_desc, (struct sockaddr *) &server, sizeof(server)) < 0){
         perror("Could not connect");
         exit(1);
     }
+    
+    char *nick = get_config("nick");
+    char *channels = get_config("channels");
 
-    set_nick(socket_desc, NICK);
-    send_user_packet(socket_desc, NICK);
-    join_channel(socket_desc, "#WatchCodeTest");
+    set_nick(socket_desc, nick);
+    send_user_packet(socket_desc, nick);
+    join_channel(socket_desc, channels);
+
+    free(nick);
+    free(channels);
 
     while (1){
         char line[512];
