@@ -39,6 +39,28 @@ void log_with_date(char line[]){
     printf("[%s] %s\n", date, line);
 }
 
+char *get_config(char name[]){
+    char *value = malloc(1024);
+    FILE *configfile = fopen("config.txt", "r");
+    value[0] = '\0';
+    if (configfile != NULL){
+        while (1){
+            char configname[1024];
+            char tempvalue[1024];
+            int status = fscanf(configfile, " %1023[^= ] = %s ", configname, tempvalue); //Parse key=value
+            if (status == EOF){
+                break;
+            }
+            if (strcmp(configname, name) == 0){
+                strncpy(value, tempvalue, strlen(tempvalue)+1);
+                break;
+            }
+        }
+        fclose(configfile);
+    }
+    return value;
+}
+
 char *get_prefix(char line[]){
     char *prefix = malloc(512);
     char clone[512];
