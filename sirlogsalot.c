@@ -241,6 +241,12 @@ int main() {
             sprintf(logline, "%s joined %s.", username, channel);
             free(channel);
             log_with_date(logline);
+        }else if (strcmp(command, "PART") == 0){
+            char logline[512];
+            char *channel = get_argument(line, 1);
+            sprintf(logline, "%s left %s.", username, channel);
+            free(channel);
+            log_with_date(logline);
         }
 
         free(prefix);
