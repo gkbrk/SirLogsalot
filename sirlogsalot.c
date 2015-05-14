@@ -35,6 +35,18 @@ void log_with_date(char line[]){
     printf("[%s] %s\n", date, line);
 }
 
+void log_to_file(char line[], FILE *logfile){
+    char date[50];
+    struct tm *current_time;
+
+    time_t now = time(0);
+    current_time = gmtime(&now);
+    strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", current_time);
+
+    fprintf(logfile, "[%s] %s\n", date, line);
+    fflush(logfile);
+}
+
 char *get_config(char name[]){
     char *value = malloc(1024);
     FILE *configfile = fopen("config.txt", "r");
@@ -211,6 +223,8 @@ int main() {
     free(nick);
     free(channels);
 
+    FILE *logfile = fopen("irclog.txt", "a+");
+
     while (1){
         char line[512];
         read_line(socket_desc, line);
@@ -229,6 +243,7 @@ int main() {
 
             sprintf(logline, "%s/%s: %s", channel, username, argument);
             log_with_date(logline);
+            log_to_file(logline, logfile);
             
             if (strstr(argument, "SirLogsalot") != NULL){
                 send_message(socket_desc, channel, "Yes my lord!");
@@ -241,12 +256,14 @@ int main() {
             sprintf(logline, "%s joined %s.", username, channel);
             free(channel);
             log_with_date(logline);
+            log_to_file(logline, logfile);
         }else if (strcmp(command, "PART") == 0){
             char logline[512];
             char *channel = get_argument(line, 1);
             sprintf(logline, "%s left %s.", username, channel);
             free(channel);
             log_with_date(logline);
+            log_to_file(logline, logfile);
         }
 
         free(prefix);
