@@ -223,7 +223,7 @@ int main() {
     free(nick);
     free(channels);
 
-    FILE *logfile = fopen("irclog.txt", "a+");
+    FILE *logfile = fopen("bot.log.txt", "a+");
 
     while (1){
         char line[512];
@@ -243,27 +243,34 @@ int main() {
 
             sprintf(logline, "%s/%s: %s", channel, username, argument);
             log_with_date(logline);
-            log_to_file(logline, logfile);
-            
-            if (strstr(argument, "SirLogsalot") != NULL){
-                send_message(socket_desc, channel, "Yes my lord!");
-            }
 
+            char filename[500];
+            sprintf(filename, "%s.log.txt", channel);
+            freopen(filename, "a+", logfile);
+            log_to_file(logline, logfile);
             free(channel);
         }else if (strcmp(command, "JOIN") == 0){
             char logline[512];
             char *channel = get_argument(line, 1);
             sprintf(logline, "%s joined %s.", username, channel);
-            free(channel);
             log_with_date(logline);
+            
+            char filename[500];
+            sprintf(filename, "%s.log.txt", channel);
+            freopen(filename, "a+", logfile);
             log_to_file(logline, logfile);
+            free(channel);
         }else if (strcmp(command, "PART") == 0){
             char logline[512];
             char *channel = get_argument(line, 1);
             sprintf(logline, "%s left %s.", username, channel);
-            free(channel);
             log_with_date(logline);
+            
+            char filename[500];
+            sprintf(filename, "%s.log.txt", channel);
+            freopen(filename, "a+", logfile);
             log_to_file(logline, logfile);
+            free(channel);
         }
 
         free(prefix);
