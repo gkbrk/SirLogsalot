@@ -1,13 +1,13 @@
-compile:
-	clang -o sirlogsalot sirlogsalot.c
+all: sirlogsalot
 
-run:
-	make compile
+sirlogsalot: sirlogsalot.c
+	$(CC) -o sirlogsalot sirlogsalot.c
+
+run: sirlogsalot
 	./sirlogsalot
 
 clean:
 	rm sirlogsalot
 
-test:
-	make compile
+test: sirlogsalot
 	valgrind ./sirlogsalot
