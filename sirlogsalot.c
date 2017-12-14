@@ -6,25 +6,29 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-int read_line(int sock, char buffer[]){
-    int length = 0;
-    while (1){
+int read_line(int sock, char *buffer) {
+    size_t length = 0;
+
+    while (1) {
         char data;
         int result = recv(sock, &data, 1, 0);
+
         if ((result <= 0) || (data == EOF)){
             perror("Connection closed");
             exit(1);
         }
+
         buffer[length] = data;
         length++;
-        if (length >= 2 && buffer[length-2] == '\r' && buffer[length-1] == '\n'){
+        
+        if (length >= 2 && buffer[length-2] == '\r' && buffer[length-1] == '\n') {
             buffer[length-2] = '\0';
             return length;
         }
     }
 }
 
-void log_with_date(char line[]){
+void log_with_date(char *line) {
     char date[50];
     struct tm *current_time;
 
@@ -35,7 +39,7 @@ void log_with_date(char line[]){
     printf("[%s] %s\n", date, line);
 }
 
-void log_to_file(char line[], FILE *logfile){
+void log_to_file(char *line, FILE *logfile) {
     char date[50];
     struct tm *current_time;
 
@@ -47,18 +51,22 @@ void log_to_file(char line[], FILE *logfile){
     fflush(logfile);
 }
 
-char *get_config(char name[]){
+char *get_config(char *name) {
     char *value = malloc(1024);
     FILE *configfile = fopen("config.txt", "r");
     value[0] = '\0';
-    if (configfile != NULL){
-        while (1){
+
+    if (configfile != NULL) {
+        while (1) {
             char configname[1024];
             char tempvalue[1024];
+
             int status = fscanf(configfile, " %1023[^= ] = %s ", configname, tempvalue); //Parse key=value
+            
             if (status == EOF){
                 break;
             }
+            
             if (strcmp(configname, name) == 0){
                 strncpy(value, tempvalue, strlen(tempvalue)+1);
                 break;
@@ -69,35 +77,37 @@ char *get_config(char name[]){
     return value;
 }
 
-char *get_prefix(char line[]){
+char *get_prefix(char *line) {
     char *prefix = malloc(512);
     char clone[512];
-    strncpy(clone, line, strlen(line)+1);
-    if (line[0] == ':'){
+
+    strncpy(clone, line, strlen(line) + 1);
+    if (line[0] == ':') {
         char *splitted = strtok(clone, " ");
-        if (splitted != NULL){
+        if (splitted != NULL) {
             strncpy(prefix, splitted+1, strlen(splitted)+1);
-        }else{
+        } else {
             prefix[0] = '\0';
         }
-    }else{
+    } else {
         prefix[0] = '\0';
     }
     return prefix;
 }
 
-char *get_username(char line[]){
+char *get_username(char *line) {
     char *username = malloc(512);
     char clone[512];
-    strncpy(clone, line, strlen(line)+1);
-    if (strchr(clone, '!') != NULL){
+
+    strncpy(clone, line, strlen(line) + 1);
+    if (strchr(clone, '!') != NULL) {
         char *splitted = strtok(clone, "!");
-        if (splitted != NULL){
+        if (splitted != NULL) {
             strncpy(username, splitted+1, strlen(splitted)+1);
-        }else{
+        } else {
             username[0] = '\0';
         }
-    }else{
+    } else {
         username[0] = '\0';
     }
     return username;
